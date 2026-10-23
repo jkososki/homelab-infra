@@ -1,0 +1,16 @@
+version: '3'
+dotenv:
+  - '{{ .ROOT_DIR }}/.env'
+tasks:
+  plan:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - tofu plan
+  apply:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - tofu apply
+  destroy:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - tofu destroy
