@@ -1,76 +1,24 @@
+locals {
+  base_content     = file(var.base_config_path)
+  override_content = file(var.override_config_path)
+
+  base_config     = trimspace(local.base_content) == "" ? {} : yamldecode(local.base_content)
+  override_config = trimspace(local.override_content) == "" ? {} : yamldecode(local.override_content)
+
+  config = provider::deepmerge::mergo(local.base_config, local.override_config)
+}
+
 module "cluster" {
   source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.1"
 
-  iso_datastore = "local"
-  cluster_name  = "homelab"
-  gateway_ip    = "192.168.144.1"
-  cluster_vip   = "192.168.144.220"
-
-  pve_hosts = {
-    "pve01" = {
-      name = "pve01"
-    }
-    "pve02" = {
-      name = "pve02"
-    }
-    "pve03" = {
-      name = "pve03"
-    }
-  }
-
-  controlplane_nodes = {
-    "cp1" = {
-      core_count = 2
-      disk_gb    = 20
-      memory_mb  = 4 * 1024
-      node_ip    = "192.168.144.221"
-      pve_host   = "pve01"
-    }
-    "cp2" = {
-      core_count = 2
-      disk_gb    = 20
-      memory_mb  = 4 * 1024
-      node_ip    = "192.168.144.222"
-      pve_host   = "pve02"
-    }
-    "cp3" = {
-      core_count = 2
-      disk_gb    = 20
-      memory_mb  = 4 * 1024
-      node_ip    = "192.168.144.223"
-      pve_host   = "pve03"
-    }
-  }
-
-  worker_nodes = {
-    "w1" = {
-      core_count    = 8
-      disk_gb       = 20
-      extra_disk_gb = 500
-      memory_mb     = 48 * 1024
-      node_ip       = "192.168.144.231"
-      pve_host      = "pve01"
-    }
-    "w2" = {
-      core_count    = 8
-      disk_gb       = 20
-      extra_disk_gb = 500
-      memory_mb     = 48 * 1024
-      node_ip       = "192.168.144.232"
-      pve_host      = "pve02"
-    }
-    "w3" = {
-      core_count    = 14
-      disk_gb       = 20
-      extra_disk_gb = 500
-      memory_mb     = 48 * 1024
-      node_ip       = "192.168.144.233"
-      pve_host      = "pve03"
-    }
-  }
+  iso_datastore      = local.config.cluster.iso_datastore
+  cluster_name       = local.config.cluster.cluster_name
+  gateway_ip         = local.config.cluster.gateway_ip
+  cluster_vip        = local.config.cluster.cluster_vip
+  pve_hosts          = local.config.cluster.pve_hosts
+  controlplane_nodes = local.config.cluster.controlplane_nodes
+  worker_nodes       = local.config.cluster.worker_nodes
 }
-
-
 
 # locals {
 #   cp_nodes = sort(keys(var.controlplane_nodes))

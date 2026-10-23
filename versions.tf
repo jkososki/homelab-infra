@@ -13,5 +13,9 @@ terraform {
       source  = "opentofu/helm"
       version = "~>3.3.0"
     }
+    deepmerge = {
+      source  = "isometry/deepmerge"
+      version = "~> 1.0"
+    }
   }
 }

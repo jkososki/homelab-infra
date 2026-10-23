@@ -1,16 +1,61 @@
 version: '3'
+
 dotenv:
   - '{{ .ROOT_DIR }}/.env'
+
+vars:
+  VALID_ENVS: [local, dev, staging, prod]
+
 tasks:
-  plan:
-    dir: '{{.USER_WORKING_DIR}}'
+  validate-env:
+    internal: true
     cmds:
-      - tofu plan
-  apply:
-    dir: '{{.USER_WORKING_DIR}}'
+      - |
+        if [[ "{{ .VALID_ENVS | has .environment }}" != "true" ]]; then
+            exit 1
+        fi
+
+  plan-*:
+    desc: Execute a tofu plan
+    dir: '{{ .USER_WORKING_DIR }}'
+    vars:
+      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+    deps:
+      - task: validate-env
+        vars:
+          environment: '{{ .ENVIRONMENT }}'
     cmds:
-      - tofu apply
-  destroy:
-    dir: '{{.USER_WORKING_DIR}}'
+      - |
+        tofu plan \
+          -var='base_config_path=./environments/base.yaml' \
+          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+
+  apply-*:
+    desc: Execute a tofu plan
+    dir: '{{ .USER_WORKING_DIR }}'
+    vars:
+      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+    deps:
+      - task: validate-env
+        vars:
+          environment: '{{ .ENVIRONMENT }}'
     cmds:
-      - tofu destroy
+      - |
+        tofu apply \
+          -var='base_config_path=./environments/base.yaml' \
+          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+
+  destroy-*:
+    desc: Execute a tofu plan
+    dir: '{{ .USER_WORKING_DIR }}'
+    vars:
+      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+    deps:
+      - task: validate-env
+        vars:
+          environment: '{{ .ENVIRONMENT }}'
+    cmds:
+      - |
+        tofu destroy \
+          -var='base_config_path=./environments/base.yaml' \
+          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
