@@ -33,6 +33,7 @@ tasks:
           -reconfigure
 
   plan-*:
+    silent: true
     desc: Execute a tofu plan
     dir: '{{ .USER_WORKING_DIR }}'
     vars:
@@ -48,6 +49,7 @@ tasks:
           -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
 
   apply-*:
+    silent: true
     desc: Execute a tofu plan
     dir: '{{ .USER_WORKING_DIR }}'
     vars:
@@ -63,6 +65,7 @@ tasks:
           -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
 
   destroy-*:
+    silent: true
     desc: Execute a tofu plan
     dir: '{{ .USER_WORKING_DIR }}'
     vars:
