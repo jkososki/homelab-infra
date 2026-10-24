@@ -1,4 +1,6 @@
 cluster:
+  talos_version: 1.14.3
+  kubernetes_version: 1.37.1
   iso_datastore: local
   cluster_name: homelab
   gateway_ip: 192.168.144.1
@@ -51,3 +53,5 @@ cluster:
       memory_mb: 49152
       node_ip: "192.168.144.233"
       pve_host: "pve03"
+cilium:
+  version: 1.20.3

@@ -9,9 +9,3 @@ variable "override_config_path" {
   type        = string
   nullable    = false
 }
-
-# variable "cilium_version" {
-#   description = "Cilium Helm chart version to install as the CNI."
-#   type        = string
-#   default     = "1.20.3"
-# }

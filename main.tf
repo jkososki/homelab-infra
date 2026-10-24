@@ -2,8 +2,8 @@ locals {
   base_content     = file(var.base_config_path)
   override_content = file(var.override_config_path)
 
-  base_config     = trimspace(local.base_content) == "" ? {} : yamldecode(local.base_content)
-  override_config = trimspace(local.override_content) == "" ? {} : yamldecode(local.override_content)
+  base_config     = yamldecode(trimspace(local.base_content) == "" ? "{}" : local.base_content)
+  override_config = yamldecode(trimspace(local.override_content) == "" ? "{}" : local.override_content)
 
   config = provider::deepmerge::mergo(local.base_config, local.override_config)
 }
@@ -11,6 +11,8 @@ locals {
 module "cluster" {
   source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.2"
 
+  kubernetes_version = local.config.cluster.kubernetes_version
+  talos_version      = local.config.cluster.talos_version
   iso_datastore      = local.config.cluster.iso_datastore
   cluster_name       = local.config.cluster.cluster_name
   gateway_ip         = local.config.cluster.gateway_ip
@@ -24,46 +26,51 @@ module "cluster" {
 #   cp_nodes = sort(keys(var.controlplane_nodes))
 # }
 
-# data "helm_template" "cilium" {
-#   chart        = "oci://quay.io/cilium/charts/cilium"
-#   kube_version = var.kubernetes_version
-#   name         = "cilium"
-#   namespace    = "kube-system"
-#   version      = var.cilium_version
-#   include_crds = true
-#   skip_tests   = true
+locals {
+  cilium_version = local.config.cilium.version
+}
 
-#   values = [yamlencode({
-#     k8sServiceHost       = var.controlplane_nodes[local.cp_nodes[0]].node_ip
-#     k8sServicePort       = 6443
-#     kubeProxyReplacement = true
+resource "helm_release" "cilium" {
+  depends_on = [
+    module.cluster
+  ]
 
-#     cgroup = {
-#       autoMount = { enabled = false }
-#       hostRoot  = "/sys/fs/cgroup"
-#     }
+  chart     = "oci://quay.io/cilium/charts/cilium"
+  name      = "cilium"
+  namespace = "kube-system"
+  version   = local.cilium_version
 
-#     gatewayAPI = {
-#       enabled = true
-#     }
+  values = [yamlencode({
+    k8sServiceHost       = values(local.config.cluster.controlplane_nodes)[0].node_ip
+    k8sServicePort       = 6443
+    kubeProxyReplacement = true
 
-#     ipam = {
-#       mode = "kubernetes"
-#     }
+    cgroup = {
+      autoMount = { enabled = false }
+      hostRoot  = "/sys/fs/cgroup"
+    }
 
-#     l2announcements = {
-#       enabled = true
-#     }
+    gatewayAPI = {
+      enabled = true
+    }
 
-#     operator = {
-#       replicas = min(length(local.cp_nodes), 2)
-#     }
+    ipam = {
+      mode = "kubernetes"
+    }
 
-#     securityContext = {
-#       capabilities = {
-#         ciliumAgent      = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
-#         cleanCiliumState = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
-#       }
-#     }
-#   })]
-# }
+    l2announcements = {
+      enabled = true
+    }
+
+    operator = {
+      replicas = min(length(local.config.cluster.controlplane_nodes), 2)
+    }
+
+    securityContext = {
+      capabilities = {
+        ciliumAgent      = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+        cleanCiliumState = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
+      }
+    }
+  })]
+}
