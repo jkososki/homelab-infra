@@ -1,5 +1,8 @@
 terraform {
   required_version = ">= v1.13.1"
+
+  backend "local" {}
+
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
@@ -10,7 +13,7 @@ terraform {
       version = "~> 0.12.0"
     }
     helm = {
-      source  = "opentofu/helm"
+      source  = "hashicorp/helm"
       version = "~>3.3.0"
     }
     deepmerge = {

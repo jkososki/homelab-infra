@@ -9,7 +9,7 @@ locals {
 }
 
 module "cluster" {
-  source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.1"
+  source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.2"
 
   iso_datastore      = local.config.cluster.iso_datastore
   cluster_name       = local.config.cluster.cluster_name

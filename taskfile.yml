@@ -4,16 +4,33 @@ dotenv:
   - '{{ .ROOT_DIR }}/.env'
 
 vars:
-  VALID_ENVS: [local, dev, staging, prod]
+  VALID_ENVS: [dev]  # Add additional environs to extend support
 
 tasks:
   validate-env:
     internal: true
+    silent: true
     cmds:
       - |
         if [[ "{{ .VALID_ENVS | has .environment }}" != "true" ]]; then
             exit 1
         fi
+
+  init-*:
+    silent: true
+    desc: Initialize the project
+    dir: '{{ .USER_WORKING_DIR }}'
+    vars:
+      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+    deps:
+      - task: validate-env
+        vars:
+          environment: '{{ .ENVIRONMENT }}'
+    cmds:
+      - |
+        tofu init \
+          -backend-config=environments/{{ .ENVIRONMENT }}/backend \
+          -reconfigure
 
   plan-*:
     desc: Execute a tofu plan
