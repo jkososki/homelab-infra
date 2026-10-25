@@ -1,3 +1,18 @@
+# The repo where app-of-apps configuration catalog is stored
+apps_repository:
+  owner: jkososki
+  repo: homelab-apps
+  branch: main
+
+apps_init:
+  cilium:
+    version: 1.20.3
+    chart: oci://quay.io/cilium/charts/cilium
+    namespace: kube-system
+    values:
+      base: catalog/cilium/base.values.yaml
+      override: catalog/cilium/env/<env>.values.yaml
+
 cluster:
   talos_version: 1.14.3
   kubernetes_version: 1.37.1
@@ -53,5 +68,3 @@ cluster:
       memory_mb: 49152
       node_ip: "192.168.144.233"
       pve_host: "pve03"
-cilium:
-  version: 1.20.3

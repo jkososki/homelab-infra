@@ -79,3 +79,11 @@ tasks:
         tofu destroy \
           -var='base_config_path=./environments/base.yaml' \
           -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+
+  export-configs:
+    silent: true
+    desc: Export kubeconfig & talosconfig
+    dir: '{{ .USER_WORKING_DIR }}'
+    cmds:
+      - tofu output talosconfig -raw > ~/.talos/config
+      - tofu output kubeconfig -raw > ~/.kube/config
