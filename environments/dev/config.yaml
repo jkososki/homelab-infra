@@ -1,5 +1,7 @@
 apps_init:
   cilium:
     values:
-      base: catalog/cilium/base.values.yaml
       override: catalog/cilium/env/dev.values.yaml
+  cilium_resources:
+    values:
+      override: catalog/cilium-resources/env/dev.values.yaml

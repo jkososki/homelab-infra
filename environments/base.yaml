@@ -6,8 +6,19 @@ apps_repository:
 
 apps_init:
   cilium:
+    release_name: cilium
     version: 1.20.3
-    chart: oci://quay.io/cilium/charts/cilium
+    repository: oci://quay.io/cilium/charts
+    chart: cilium
+    namespace: kube-system
+    values:
+      base: catalog/cilium/base.values.yaml
+      override: catalog/cilium/env/<env>.values.yaml
+  cilium_resources:
+    release_name: cilium-resources
+    version: 0.1.1
+    repository: https://jkososki.github.io/charts
+    chart: raw
     namespace: kube-system
     values:
       base: catalog/cilium/base.values.yaml

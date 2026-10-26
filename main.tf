@@ -46,9 +46,10 @@ data "github_repository_file" "override_values" {
 data "helm_template" "this" {
   for_each = local.apps
 
-  name             = each.key
+  name             = each.value.release_name
   namespace        = each.value.namespace
   create_namespace = true
+  repository       = each.value.repository
   chart            = each.value.chart
   version          = each.value.version
   kube_version     = local.config.cluster.kubernetes_version
