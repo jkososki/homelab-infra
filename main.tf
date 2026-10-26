@@ -10,9 +10,6 @@ locals {
 }
 
 locals {
-  # Day-Zero helm deployment configurations
-
-  # cilium_version = local.config.cilium.version
   apps_repo = local.config.apps_repository
   apps      = local.config.apps_init
 }
