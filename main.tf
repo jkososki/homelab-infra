@@ -90,17 +90,16 @@ resource "helm_release" "cilium" {
     data.github_repository_file.override_values["cilium"].content
   ]
 
-  set_list = [
+  set = [
     {
       name  = "k8sServiceHost"
-      value = [local.cluster.cluster_vip]
+      value = local.cluster.cluster_vip
     },
     {
       name  = "k8sServicePort"
-      value = [local.cluster.cluster_vip]
+      value = local.cluster.cluster_vip
     }
   ]
-
   lifecycle {
     ignore_changes  = all
     prevent_destroy = false
