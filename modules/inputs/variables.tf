@@ -23,6 +23,7 @@ variable "config" {
       cluster_name       = string
       gateway_ip         = string
       cluster_vip        = string
+      service_port       = number
       pve_hosts = map(object({
         name = string
       }))

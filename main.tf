@@ -97,7 +97,7 @@ resource "helm_release" "cilium" {
     },
     {
       name  = "k8sServicePort"
-      value = local.cluster.cluster_vip
+      value = local.cluster.service_port
     }
   ]
   lifecycle {
