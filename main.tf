@@ -84,6 +84,7 @@ resource "helm_release" "cilium" {
   chart            = local.cilium.chart
   version          = local.cilium.version
   wait             = true
+  skip_crds        = false
 
   values = [
     data.github_repository_file.base_values["cilium"].content,
@@ -106,36 +107,36 @@ resource "helm_release" "cilium" {
   }
 }
 
-locals {
-  cilium_resources = local.apps_init.cilium_resources
-}
-resource "helm_release" "cilium_resources" {
-  depends_on = [
-    helm_release.cilium
-  ]
+# locals {
+#   cilium_resources = local.apps_init.cilium_resources
+# }
+# resource "helm_release" "cilium_resources" {
+#   depends_on = [
+#     helm_release.cilium
+#   ]
 
-  name             = local.cilium_resources.release_name
-  namespace        = local.cilium_resources.namespace
-  create_namespace = true
-  repository       = local.cilium_resources.repository
-  chart            = local.cilium_resources.chart
-  version          = local.cilium_resources.version
-  wait             = true
+#   name             = local.cilium_resources.release_name
+#   namespace        = local.cilium_resources.namespace
+#   create_namespace = true
+#   repository       = local.cilium_resources.repository
+#   chart            = local.cilium_resources.chart
+#   version          = local.cilium_resources.version
+#   wait             = true
 
-  values = [
-    data.github_repository_file.base_values["cilium_resources"].content,
-    data.github_repository_file.override_values["cilium_resources"].content
-  ]
+#   values = [
+#     data.github_repository_file.base_values["cilium_resources"].content,
+#     data.github_repository_file.override_values["cilium_resources"].content
+#   ]
 
-  set = [
-    {
-      name  = "manifests.gateway.spec.infrastructure.annotations.lbipam\\.cilium\\.io/ips"
-      value = local.cluster.cluster_vip
-    }
-  ]
+#   set = [
+#     {
+#       name  = "manifests.gateway.spec.infrastructure.annotations.lbipam\\.cilium\\.io/ips"
+#       value = local.cluster.cluster_vip
+#     }
+#   ]
 
-  lifecycle {
-    ignore_changes  = all
-    prevent_destroy = false
-  }
-}
+#   lifecycle {
+#     ignore_changes  = all
+#     prevent_destroy = false
+#   }
+# }
