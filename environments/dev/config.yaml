@@ -5,3 +5,6 @@ apps_init:
   cilium_resources:
     values:
       override: catalog/cilium-resources/env/dev.values.yaml
+  argocd:
+    values:
+      override: catalog/argocd/env/dev.values.yaml

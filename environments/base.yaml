@@ -23,6 +23,15 @@ apps_init:
     values:
       base: catalog/cilium/base.values.yaml
       override: catalog/cilium/env/<env>.values.yaml
+  argocd:
+    release_name: argocd
+    version: 10.11.6
+    repository: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    namespace: kube-system
+    values:
+      base: catalog/argocd/base.values.yaml
+      override: catalog/argocd/env/<env>.values.yaml
 
 cluster:
   talos_version: 1.14.3
