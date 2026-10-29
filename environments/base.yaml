@@ -40,6 +40,7 @@ cluster:
   cluster_name: homelab
   gateway_ip: 192.168.144.1
   cluster_vip: 192.168.144.220
+  service_port: 6443
   pve_hosts:
     pve01:
       name: pve01
