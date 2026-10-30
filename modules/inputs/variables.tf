@@ -22,6 +22,7 @@ variable "config" {
       iso_datastore       = string
       cluster_name        = string
       gateway_ip          = string
+      ingress_ip          = string
       gateway_api_version = string
       cluster_vip         = string
       service_port        = number

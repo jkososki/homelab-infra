@@ -37,7 +37,7 @@ apps_init:
     version: 10.11.6
     repository: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    namespace: kube-system
+    namespace: argocd
     values:
       base: catalog/argocd/base.values.yaml
       override: catalog/argocd/env/<env>.values.yaml
@@ -49,6 +49,7 @@ cluster:
   cluster_name: homelab
   gateway_ip: 192.168.144.1
   gateway_api_version: v1.7.0
+  ingress_ip: 192.168.144.235
   cluster_vip: 192.168.144.220
   service_port: 6443
   pve_hosts:

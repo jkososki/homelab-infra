@@ -162,9 +162,39 @@ resource "helm_release" "cilium_resources" {
   set = [
     {
       name  = "manifests.gateway.spec.infrastructure.annotations.lbipam\\.cilium\\.io/ips"
-      value = local.cluster.cluster_vip
+      value = local.cluster.ingress_ip
     }
   ]
+
+  lifecycle {
+    ignore_changes  = all
+    prevent_destroy = false
+  }
+}
+
+locals {
+  argocd = local.apps_init.argocd
+}
+
+resource "helm_release" "argocd" {
+  depends_on = [
+    helm_release.cilium_resources
+  ]
+
+  name             = local.argocd.release_name
+  namespace        = local.argocd.namespace
+  create_namespace = true
+  repository       = local.argocd.repository
+  chart            = local.argocd.chart
+  version          = local.argocd.version
+  wait             = true
+
+  values = [
+    data.github_repository_file.base_values["argocd"].content,
+    data.github_repository_file.override_values["argocd"].content
+  ]
+
+  set = []
 
   lifecycle {
     ignore_changes  = all
