@@ -5,6 +5,15 @@ apps_repository:
   branch: main
 
 apps_init:
+  gateway_api:
+    release_name: gateway-api
+    version: 1.6.3
+    repository: https://jkososki.github.io/charts
+    chart: gateway-api
+    namespace: kube-system
+    values:
+      base: catalog/gateway-api/base.values.yaml
+      override: catalog/gateway-api/env/<env>.values.yaml
   cilium:
     release_name: cilium
     version: 1.20.3
@@ -39,7 +48,9 @@ cluster:
   iso_datastore: local
   cluster_name: homelab
   gateway_ip: 192.168.144.1
+  gateway_api_version: v1.7.0
   cluster_vip: 192.168.144.220
+  service_port: 6443
   pve_hosts:
     pve01:
       name: pve01
