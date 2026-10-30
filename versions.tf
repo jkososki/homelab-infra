@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~>3.3.0"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.6.3"
+    }
     proxmox = {
       source  = "bpg/proxmox"
       version = "~> 0.116.1"

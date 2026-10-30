@@ -1,4 +1,7 @@
 apps_init:
+  gateway_api:
+    values:
+      override: catalog/gateway-api/env/dev.values.yaml
   cilium:
     values:
       override: catalog/cilium/env/dev.values.yaml

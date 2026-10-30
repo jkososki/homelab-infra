@@ -17,13 +17,14 @@ variable "config" {
       })
     }))
     cluster = object({
-      talos_version      = string
-      kubernetes_version = string
-      iso_datastore      = string
-      cluster_name       = string
-      gateway_ip         = string
-      cluster_vip        = string
-      service_port       = number
+      talos_version       = string
+      kubernetes_version  = string
+      iso_datastore       = string
+      cluster_name        = string
+      gateway_ip          = string
+      gateway_api_version = string
+      cluster_vip         = string
+      service_port        = number
       pve_hosts = map(object({
         name = string
       }))
