@@ -8,7 +8,7 @@ locals {
 }
 
 module "inputs" {
-  source = "./modules/inputs"
+  source = "../modules/inputs"
 
   config = provider::deepmerge::mergo(local.base_config, local.override_config)
 }

@@ -5,6 +5,10 @@ dotenv:
 
 vars:
   VALID_ENVS: [dev]  # Add additional environs to extend support
+  VALID_ROOTS:  # Add additional roots to cover each tofu surface
+    map:
+      "10": 10-cluster
+      "20": 20-gitops
 
 tasks:
   validate-env:
@@ -16,74 +20,109 @@ tasks:
             exit 1
         fi
 
-  init-*:
+  validate-root:
+    internal: true
     silent: true
-    desc: Initialize the project
-    dir: '{{ .USER_WORKING_DIR }}'
-    vars:
-      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
-    deps:
+    cmds:
+      - |
+        if [[ "{{ (keys .VALID_ROOTS) | has .rootModule }}" != "true" ]]; then
+            exit 1
+        fi
+
+  validate:
+    internal: true
+    silent: true
+    cmds:
       - task: validate-env
         vars:
+          environment: '{{ .environment }}'
+      - task: validate-root
+        vars:
+          rootModule: '{{ .rootModule }}'
+
+  init-*-*:
+    silent: true
+    desc: Initialize the project
+    dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
+    vars:
+      ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+      ROOT_MODULE: "{{ lower (index .MATCH 1) }}"
+      ROOT_MODULE_NAME: "{{ get .VALID_ROOTS .ROOT_MODULE }}"
+      BACKEND_CONFIG: "{{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/{{ .ROOT_MODULE_NAME }}.backend"
+    deps:
+      - task: validate
+        vars:
           environment: '{{ .ENVIRONMENT }}'
+          rootModule: '{{ .ROOT_MODULE }}'
     cmds:
       - |
         tofu init \
-          -backend-config=environments/{{ .ENVIRONMENT }}/backend \
+          -backend-config={{ .BACKEND_CONFIG }} \
           -reconfigure
 
-  plan-*:
+  plan-*-*:
     silent: true
     desc: Execute a tofu plan
-    dir: '{{ .USER_WORKING_DIR }}'
+    dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+      ROOT_MODULE: "{{ lower (index .MATCH 1) }}"
+      ROOT_MODULE_NAME: "{{ get .VALID_ROOTS .ROOT_MODULE }}"
     deps:
-      - task: validate-env
+      - task: validate
         vars:
           environment: '{{ .ENVIRONMENT }}'
+          rootModule: '{{ .ROOT_MODULE }}'
     cmds:
       - |
         tofu plan \
-          -var='base_config_path=./environments/base.yaml' \
-          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+          -var='base_config_path={{ .TASKFILE_DIR }}/environments/base.yaml' \
+          -var='override_config_path={{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
 
-  apply-*:
+  apply-*-*:
     silent: true
     desc: Execute a tofu plan
-    dir: '{{ .USER_WORKING_DIR }}'
+    dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+      ROOT_MODULE: "{{ lower (index .MATCH 1) }}"
+      ROOT_MODULE_NAME: "{{ get .VALID_ROOTS .ROOT_MODULE }}"
     deps:
-      - task: validate-env
+      - task: validate
         vars:
           environment: '{{ .ENVIRONMENT }}'
+          rootModule: '{{ .ROOT_MODULE }}'
     cmds:
       - |
         tofu apply \
-          -var='base_config_path=./environments/base.yaml' \
-          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+          -var='base_config_path={{ .TASKFILE_DIR }}/environments/base.yaml' \
+          -var='override_config_path={{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
 
-  destroy-*:
+  destroy-*-*:
     silent: true
     desc: Execute a tofu plan
-    dir: '{{ .USER_WORKING_DIR }}'
+    dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
+      ROOT_MODULE: "{{ lower (index .MATCH 1) }}"
+      ROOT_MODULE_NAME: "{{ get .VALID_ROOTS .ROOT_MODULE }}"
     deps:
-      - task: validate-env
+      - task: validate
         vars:
           environment: '{{ .ENVIRONMENT }}'
+          rootModule: '{{ .ROOT_MODULE }}'
     cmds:
       - |
         tofu destroy \
-          -var='base_config_path=./environments/base.yaml' \
-          -var='override_config_path=./environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+          -var='base_config_path={{ .TASKFILE_DIR }}/environments/base.yaml' \
+          -var='override_config_path={{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
 
   export-configs:
+    # Currently only exports dev.
+    # Will add script to merge later.
     silent: true
     desc: Export kubeconfig & talosconfig
-    dir: '{{ .USER_WORKING_DIR }}'
+    dir: "{{ .TASKFILE_DIR }}/10-cluster"
     cmds:
       - tofu output talosconfig -raw > ~/.talos/config
       - tofu output kubeconfig -raw > ~/.kube/config
