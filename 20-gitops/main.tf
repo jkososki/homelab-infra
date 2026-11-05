@@ -14,28 +14,9 @@ module "inputs" {
 }
 
 locals {
-  cluster = module.inputs.cluster
-}
-
-module "cluster" {
-  source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.3"
-
-  kubernetes_version = local.cluster.kubernetes_version
-  talos_version      = local.cluster.talos_version
-  iso_datastore      = local.cluster.iso_datastore
-  cluster_name       = local.cluster.cluster_name
-  gateway_ip         = local.cluster.gateway_ip
-  cluster_vip        = local.cluster.cluster_vip
-  pve_hosts          = local.cluster.pve_hosts
-  controlplane_nodes = local.cluster.controlplane_nodes
-  worker_nodes       = local.cluster.worker_nodes
-}
-
-locals {
   apps_repo = module.inputs.apps_repository
   apps_init = module.inputs.apps_init
 }
-
 
 data "github_repository_file" "base_values" {
   for_each = local.apps_init
@@ -72,7 +53,6 @@ locals {
 
 resource "helm_release" "gateway_api" {
   depends_on = [
-    module.cluster,
     data.github_repository_file.base_values,
     data.github_repository_file.override_values
   ]
@@ -100,7 +80,8 @@ resource "helm_release" "gateway_api" {
 }
 
 locals {
-  cilium = local.apps_init.cilium
+  cluster = module.inputs.cluster
+  cilium  = local.apps_init.cilium
 }
 
 resource "helm_release" "cilium" {
