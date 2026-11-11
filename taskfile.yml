@@ -116,6 +116,7 @@ tasks:
         tofu destroy \
           -var='base_config_path={{ .TASKFILE_DIR }}/environments/base.yaml' \
           -var='override_config_path={{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
+# tofu destroy -parallelism=1
 
   export-configs:
     # Currently only exports dev.

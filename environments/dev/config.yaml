@@ -11,3 +11,6 @@ apps_init:
   argocd:
     values:
       override: catalog/argocd/env/dev.values.yaml
+  homelab:
+    values:
+      override: bootstrap/homelab/env/dev.values.yaml

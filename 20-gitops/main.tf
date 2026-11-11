@@ -182,3 +182,33 @@ resource "helm_release" "argocd" {
     prevent_destroy = false
   }
 }
+
+locals {
+  gitops = local.apps_init.gitops
+}
+
+resource "helm_release" "gitops" {
+  depends_on = [
+    helm_release.argocd
+  ]
+
+  name             = local.gitops.release_name
+  namespace        = local.gitops.namespace
+  create_namespace = true
+  repository       = local.gitops.repository
+  chart            = local.gitops.chart
+  version          = local.gitops.version
+  wait             = true
+
+  values = [
+    data.github_repository_file.base_values["gitops"].content,
+    data.github_repository_file.override_values["gitops"].content
+  ]
+
+  set = []
+
+  lifecycle {
+    ignore_changes  = all
+    prevent_destroy = false
+  }
+}

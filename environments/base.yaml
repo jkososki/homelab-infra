@@ -41,6 +41,15 @@ apps_init:
     values:
       base: catalog/argocd/base.values.yaml
       override: catalog/argocd/env/<env>.values.yaml
+  homelab:
+    release_name: homelab
+    version: 0.1.5
+    repository: https://jkososki.github.io/charts
+    chart: apps-manager
+    namespace: argocd
+    values:
+      base: bootstrap/homelab/base.values.yaml
+      override: bootstrap/homelab/env/<env>.values.yaml
 
 cluster:
   talos_version: 1.14.3
