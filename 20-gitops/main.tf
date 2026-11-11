@@ -184,25 +184,25 @@ resource "helm_release" "argocd" {
 }
 
 locals {
-  gitops = local.apps_init.gitops
+  homelab = local.apps_init.homelab
 }
 
-resource "helm_release" "gitops" {
+resource "helm_release" "homelab" {
   depends_on = [
     helm_release.argocd
   ]
 
-  name             = local.gitops.release_name
-  namespace        = local.gitops.namespace
+  name             = local.homelab.release_name
+  namespace        = local.homelab.namespace
   create_namespace = true
-  repository       = local.gitops.repository
-  chart            = local.gitops.chart
-  version          = local.gitops.version
+  repository       = local.homelab.repository
+  chart            = local.homelab.chart
+  version          = local.homelab.version
   wait             = true
 
   values = [
-    data.github_repository_file.base_values["gitops"].content,
-    data.github_repository_file.override_values["gitops"].content
+    data.github_repository_file.base_values["homelab"].content,
+    data.github_repository_file.override_values["homelab"].content
   ]
 
   set = []
