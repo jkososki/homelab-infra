@@ -42,7 +42,7 @@ tasks:
 
   init-*-*:
     silent: true
-    desc: Initialize the project
+    desc: Initialize the project (init-<env>-<module>)
     dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
@@ -62,7 +62,7 @@ tasks:
 
   plan-*-*:
     silent: true
-    desc: Execute a tofu plan
+    desc: Execute a tofu plan (plan-<env>-<module>)
     dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
@@ -81,7 +81,7 @@ tasks:
 
   apply-*-*:
     silent: true
-    desc: Execute a tofu plan
+    desc: Execute a tofu plan (apply-<env>-<module>)
     dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
@@ -100,7 +100,7 @@ tasks:
 
   destroy-*-*:
     silent: true
-    desc: Execute a tofu plan
+    desc: Execute a tofu plan (destroy-<env>-<module>)
     dir: "{{ .TASKFILE_DIR }}/{{ .ROOT_MODULE_NAME }}"
     vars:
       ENVIRONMENT: "{{ lower (index .MATCH 0) }}"
