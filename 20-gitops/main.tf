@@ -199,6 +199,7 @@ resource "helm_release" "homelab" {
   chart            = local.homelab.chart
   version          = local.homelab.version
   wait             = true
+  upgrade_install  = true
 
   values = [
     data.github_repository_file.base_values["homelab"].content,
