@@ -30,8 +30,8 @@ apps_init:
     chart: raw
     namespace: kube-system
     values:
-      base: catalog/cilium/base.values.yaml
-      override: catalog/cilium/env/<env>.values.yaml
+      base: catalog/cilium-resources/base.values.yaml
+      override: catalog/cilium-resources/env/<env>.values.yaml
   argocd:
     release_name: argocd
     version: 10.11.6
