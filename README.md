@@ -56,7 +56,7 @@ Each release uses `lifecycle { ignore_changes = all }`. OpenTofu installs them o
 │   └── inputs/            # Typed schema and validation for the merged config
 ├── environments/
 │   ├── base.yaml          # Shared defaults for every environment
-│   └── dev/
+│   └── proxmox/
 │       ├── config.yaml    # Environment overrides, deep-merged over base.yaml
 │       ├── 10-cluster.backend
 │       └── 20-gitops.backend
@@ -143,23 +143,23 @@ task --list
 | `destroy-<env>-<layer>`  | Run `tofu destroy` with the merged configuration |
 | `export-configs`         | Write `talosconfig` and `kubeconfig` from layer 10's outputs |
 
-Additional OpenTofu flags can be passed after `--`, for example `task plan-dev-10 -- -target=module.cluster`.
+Additional OpenTofu flags can be passed after `--`, for example `task plan-proxmox-10 -- -target=module.cluster`.
 
 ### Bringing up an environment
 
 ```sh
 # 1. Provision the cluster
-task init-dev-10
-task plan-dev-10
-task apply-dev-10
+task init-proxmox-10
+task plan-proxmox-10
+task apply-proxmox-10
 
 # 2. Export client configuration
 task export-configs
 
 # 3. Bootstrap the GitOps platform
-task init-dev-20
-task plan-dev-20
-task apply-dev-20
+task init-proxmox-20
+task plan-proxmox-20
+task apply-proxmox-20
 ```
 
 > [!WARNING]
@@ -172,11 +172,11 @@ When layer 20 finishes, Argo CD reconciles the remaining workloads from `homelab
 Destroy the layers in reverse order:
 
 ```sh
-task destroy-dev-20
-task destroy-dev-10
+task destroy-proxmox-20
+task destroy-proxmox-10
 ```
 
-If Proxmox reports lock or concurrency errors during teardown, run with reduced parallelism: `task destroy-dev-10 -- -parallelism=1`.
+If Proxmox reports lock or concurrency errors during teardown, run with reduced parallelism: `task destroy-proxmox-10 -- -parallelism=1`.
 
 ## Adding an environment
 

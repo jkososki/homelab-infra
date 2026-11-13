@@ -4,7 +4,7 @@ dotenv:
   - '{{ .ROOT_DIR }}/.env'
 
 vars:
-  VALID_ENVS: [dev]  # Add additional environs to extend support
+  VALID_ENVS: [proxmox]  # Add additional environs to extend support
   VALID_ROOTS:  # Add additional roots to cover each tofu surface
     map:
       "10": 10-cluster
@@ -116,11 +116,9 @@ tasks:
         tofu destroy \
           -var='base_config_path={{ .TASKFILE_DIR }}/environments/base.yaml' \
           -var='override_config_path={{ .TASKFILE_DIR }}/environments/{{ .ENVIRONMENT }}/config.yaml' {{ .CLI_ARGS }}
-# tofu destroy -parallelism=1
 
   export-configs:
-    # Currently only exports dev.
-    # Will add script to merge later.
+    # Currently only exports proxmox.
     silent: true
     desc: Export kubeconfig & talosconfig
     dir: "{{ .TASKFILE_DIR }}/10-cluster"

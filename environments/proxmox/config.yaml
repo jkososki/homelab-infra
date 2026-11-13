@@ -1,0 +1,16 @@
+apps_init:
+  gateway_api:
+    values:
+      override: catalog/gateway-api/env/proxmox.values.yaml
+  cilium:
+    values:
+      override: catalog/cilium/env/proxmox.values.yaml
+  cilium_resources:
+    values:
+      override: catalog/cilium-resources/env/proxmox.values.yaml
+  argocd:
+    values:
+      override: catalog/argocd/env/proxmox.values.yaml
+  homelab:
+    values:
+      override: bootstrap/homelab/env/proxmox.values.yaml
