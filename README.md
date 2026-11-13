@@ -129,37 +129,40 @@ See the [bpg/proxmox provider documentation](https://registry.terraform.io/provi
 
 ## Usage
 
-All workflows go through Task, using the pattern `<action>-<env>-<layer>`:
+All workflows go through Task, using the pattern `<action>-<layer>`, where `<layer>` is `10` or `20`.
 
 ```sh
 task --list
 ```
 
-| Task                     | Description |
-| ------------------------ | ----------- |
-| `init-<env>-<layer>`     | Initialize the layer against the environment's backend |
-| `plan-<env>-<layer>`     | Run `tofu plan` with the merged configuration |
-| `apply-<env>-<layer>`    | Run `tofu apply` with the merged configuration |
-| `destroy-<env>-<layer>`  | Run `tofu destroy` with the merged configuration |
-| `export-configs`         | Write `talosconfig` and `kubeconfig` from layer 10's outputs |
+| Task                | Description |
+| ------------------- | ----------- |
+| `init-<layer>`    | Initialize the layer against the environment's backend |
+| `plan-<layer>`    | Run `tofu plan` with the merged configuration |
+| `apply-<layer>`   | Run `tofu apply` with the merged configuration |
+| `destroy-<layer>` | Run `tofu destroy` with the merged configuration |
+| `export-configs`  | Write `talosconfig` and `kubeconfig` from layer 10's outputs |
 
-Additional OpenTofu flags can be passed after `--`, for example `task plan-proxmox-10 -- -target=module.cluster`.
+Additional OpenTofu flags can be passed after `--`, for example `task plan-10 -- -target=module.cluster`.
 
-### Bringing up an environment
+The environment is fixed to `proxmox` by the `ENVIRONMENT` variable in [`taskfile.yml`](taskfile.yml).  
+Can add additional / conventional environments if needed.
+
+### Bringing up the cluster
 
 ```sh
 # 1. Provision the cluster
-task init-proxmox-10
-task plan-proxmox-10
-task apply-proxmox-10
+task init-10
+task plan-10
+task apply-10
 
 # 2. Export client configuration
 task export-configs
 
 # 3. Bootstrap the GitOps platform
-task init-proxmox-20
-task plan-proxmox-20
-task apply-proxmox-20
+task init-20
+task plan-20
+task apply-20
 ```
 
 > [!WARNING]
@@ -172,15 +175,17 @@ When layer 20 finishes, Argo CD reconciles the remaining workloads from `homelab
 Destroy the layers in reverse order:
 
 ```sh
-task destroy-proxmox-20
-task destroy-proxmox-10
+task destroy-20
+task destroy-10
 ```
 
-If Proxmox reports lock or concurrency errors during teardown, run with reduced parallelism: `task destroy-proxmox-10 -- -parallelism=1`.
+If Proxmox reports lock or concurrency errors during teardown, run with reduced parallelism: `task destroy-10 -- -parallelism=1`.
 
-## Adding an environment
+## Using a different environment
 
-1. Add the environment name to `VALID_ENVS` in [`taskfile.yml`](taskfile.yml).
+This repository targets a single environment, `proxmox`. To point it at another one:
+
+1. Change `ENVIRONMENT` in [`taskfile.yml`](taskfile.yml).
 2. Create `environments/<env>/config.yaml` with the overrides for that environment. At minimum, set each `apps_init.*.values.override` path.
 3. Create `environments/<env>/10-cluster.backend` and `environments/<env>/20-gitops.backend` with that environment's backend settings.
 4. Add the matching `env/<env>.values.yaml` files to `homelab-apps`.
