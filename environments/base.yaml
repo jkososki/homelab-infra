@@ -43,7 +43,7 @@ apps_init:
       override: catalog/argocd/env/<env>.values.yaml
   homelab:
     release_name: homelab
-    version: 0.1.9
+    version: 0.1.10
     repository: https://jkososki.github.io/charts
     chart: apps-manager
     namespace: argocd
