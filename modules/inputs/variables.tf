@@ -45,6 +45,7 @@ variable "config" {
         node_ip       = string
         pve_host      = string
       }))
+      talos_system_extensions = list(string)
     })
   })
 }

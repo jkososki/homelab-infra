@@ -20,13 +20,14 @@ locals {
 module "cluster" {
   source = "git@github.com:jkososki/terraform-proxmox-talos-k8s.git?ref=v0.0.3"
 
-  kubernetes_version = local.cluster.kubernetes_version
-  talos_version      = local.cluster.talos_version
-  iso_datastore      = local.cluster.iso_datastore
-  cluster_name       = local.cluster.cluster_name
-  gateway_ip         = local.cluster.gateway_ip
-  cluster_vip        = local.cluster.cluster_vip
-  pve_hosts          = local.cluster.pve_hosts
-  controlplane_nodes = local.cluster.controlplane_nodes
-  worker_nodes       = local.cluster.worker_nodes
+  kubernetes_version      = local.cluster.kubernetes_version
+  talos_version           = local.cluster.talos_version
+  iso_datastore           = local.cluster.iso_datastore
+  cluster_name            = local.cluster.cluster_name
+  gateway_ip              = local.cluster.gateway_ip
+  cluster_vip             = local.cluster.cluster_vip
+  pve_hosts               = local.cluster.pve_hosts
+  controlplane_nodes      = local.cluster.controlplane_nodes
+  worker_nodes            = local.cluster.worker_nodes
+  talos_system_extensions = local.cluster.talos_system_extensions
 }

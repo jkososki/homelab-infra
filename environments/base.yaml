@@ -109,3 +109,5 @@ cluster:
       memory_mb: 49152
       node_ip: "192.168.144.233"
       pve_host: "pve03"
+  talos_system_extensions:
+    - siderolabs/iscsi-tools
